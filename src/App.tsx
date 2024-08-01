@@ -51,7 +51,7 @@ function App() {
       customField?.frame?.enableAutoResizing();
 
       const entry = customField?.entry;
-      const url = customField?.entry.getData().url;
+      const url = getClearUrl(customField?.entry.getData().url);
       setUrl(url)
       // Set the branch.
       const branch = app?.stack?.getCurrentBranch()?.uid ?? 'main';
