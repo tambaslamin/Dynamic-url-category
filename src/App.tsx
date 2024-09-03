@@ -22,8 +22,6 @@ const getHrefUrl = (branch: string) => {
   }
 }
 
-const getClearUrl = (url: string) => url.replace(/\?.*$/, "");
-
 function App() {
   const [error, setError] = useState<any>(null);
   const [app, setApp] = useState({} as any);
@@ -51,43 +49,16 @@ function App() {
       customField?.frame?.enableAutoResizing();
 
       const entry = customField?.entry;
-      const url = getClearUrl(customField?.entry.getData().url);
-      setUrl(url)
+      const url = customField?.entry.getData().url;
+      setUrl(url);
+
       // Set the branch.
       const branch = app?.stack?.getCurrentBranch()?.uid ?? 'main';
       setBranch(branch);
-      const appendToUrl = `?origin=gcp-na-app.contentstack.com&branch=${branch}`;
 
       // Set the entry uid.
       setEntryUidAndLog(entry)
 
-      // Entry is not a template, set the URL field on form load.
-      customField?.entry.getField("url", { useUnsavedSchema: true })?.setData(url + appendToUrl);
-      
-      entry?.onChange((data: any) => {
-        console.log("🚀 Entry changed, UID is:", entry?._data?.uid)
-        entry.getField(FIELD_URL)?.setData(url + appendToUrl)
-      });
-
-      entry?.onSave(async () => {
-          // Do not set URL field if starting from a template on the first save.
-          const cleanUrl = getClearUrl(customField?.entry?.getData()?.url);
-          const entryCustomField = customField?.entry;
-          console.log(entryCustomField.getField("url"))
-          entryCustomField.getField("url")?.setData(cleanUrl);
-          setUrl(url)
-          const newEntry = entryCustomField.getData();
-          newEntry.url = cleanUrl;
-          const payload = {
-            entry: newEntry
-          };
-          setIsSaved(false);
-          try {
-            await app.stack.ContentType(entryCustomField?.content_type?.uid).Entry(newEntry.uid).update(payload);
-          } catch (err) {
-            console.log("🚀 ~ entry?.onSave ~ err:", err)
-          }
-      })
     } else {
       console.log('Custom field not yet loaded...')
     }
@@ -113,9 +84,7 @@ function App() {
     initializeApp()
   }, [initializeApp])
   
-  let kms_url_not_available_message = (entryUid)
-    ? 'Save entry to view KMS link.'
-    : 'Save entry to view KMS link.'
+  let kms_url_not_available_message = 'Save entry to view KMS link.'
 
   const return_value = (url)
     ? <>
